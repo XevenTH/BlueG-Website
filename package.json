@@ -1,0 +1,19 @@
+{
+  "name": "blueg",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XevenTH/BlueG-Website.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/XevenTH/BlueG-Website/issues"
+  },
+  "homepage": "https://github.com/XevenTH/BlueG-Website#readme",
+  "description": ""
+}
