@@ -10,6 +10,7 @@ interface Props {
 
     selectedActivity: Activity | undefined
     formMode: boolean
+    isSubmit: boolean;
 
     setActivity: (id: string) => void;
     cancelActivity: () => void;
@@ -20,7 +21,7 @@ interface Props {
 }
 
 export default function ActivityDashboard({ activities, selectedActivity, formMode,
-    setActivity, cancelActivity, setFormMode, setCancelFormMode, setCreateEdit, setDelete }: Props) {
+    setActivity, cancelActivity, setFormMode, setCancelFormMode, setCreateEdit, setDelete, isSubmit}: Props) {
     return (
         <Grid>
             <Grid.Column width='10'>
@@ -28,6 +29,7 @@ export default function ActivityDashboard({ activities, selectedActivity, formMo
                     activities={activities}
                     setActivity={setActivity}
                     setDelete={setDelete}
+                    isSubmit={isSubmit} 
                 />
             </Grid.Column>
             <Grid.Column width='6'>
@@ -38,7 +40,12 @@ export default function ActivityDashboard({ activities, selectedActivity, formMo
                         setFormMode={setFormMode}
                     />}
                 {formMode &&
-                    <ActivityForm cancelFormMode={setCancelFormMode} selectedActivity={selectedActivity} setCreateEdit={setCreateEdit} />}
+                    <ActivityForm 
+                    cancelFormMode={setCancelFormMode} 
+                    selectedActivity={selectedActivity} 
+                    setCreateEdit={setCreateEdit}
+                    isSubmit={isSubmit} 
+                    />}
             </Grid.Column>
         </Grid>
     )

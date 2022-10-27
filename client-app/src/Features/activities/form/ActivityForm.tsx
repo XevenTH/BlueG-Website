@@ -6,9 +6,10 @@ interface Props {
     selectedActivity: Activity | undefined
     cancelFormMode: () => void;
     setCreateEdit: (activity: Activity) => void;
+    isSubmit: boolean
 }
 
-export default function ActivityForm({ selectedActivity, cancelFormMode, setCreateEdit }: Props) {
+export default function ActivityForm({ selectedActivity, cancelFormMode, setCreateEdit, isSubmit}: Props) {
 
     GetInitialModel(selectedActivity)
 
@@ -37,7 +38,7 @@ export default function ActivityForm({ selectedActivity, cancelFormMode, setCrea
                 </Form.Field>
                 <Form.Field>
                     <label style={{ 'fontSize': '1.1em' }}>Date</label>
-                    <input name='date' value={activity.date} onChange={UpdateChangeHandler} placeholder='Date' />
+                    <input type={'date'} name='date' value={activity.date} onChange={UpdateChangeHandler} placeholder='Date' />
                 </Form.Field>
                 <Form.Field>
                     <label style={{ 'fontSize': '1.1em' }}>Category</label>
@@ -52,7 +53,7 @@ export default function ActivityForm({ selectedActivity, cancelFormMode, setCrea
                     <input name='venue' value={activity.venue} onChange={UpdateChangeHandler} placeholder='Venue' />
                 </Form.Field>
                 <Button onClick={cancelFormMode} basic type='button' icon='cancel' color='grey' content='Cancel' labelPosition='left' />
-                <Button basic type='submit' floated='right' icon='hand point left outline' color='green' content='Submit' labelPosition='right' />
+                <Button loading={isSubmit} basic type='submit' floated='right' icon='hand point left outline' color='green' content='Submit' labelPosition='right' />
             </Form>
         </Segment>
     )
