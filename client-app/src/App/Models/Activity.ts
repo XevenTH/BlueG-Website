@@ -9,7 +9,7 @@ export interface Activity {
 }
 
 export function GetInitialModel(Activity?: Activity) {
-  const initialModel = Activity || {
+  const initialModel = Activity ?? {
     id: '',
     title: '',
     date: '',

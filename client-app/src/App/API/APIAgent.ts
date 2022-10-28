@@ -29,7 +29,7 @@ const request = {
 };
 
 const handler = {
-    List: request.get<Activity[]>('/activities'),
+    List: () =>  request.get<Activity[]>('/activities'),
     details: (id: String) => request.get<Activity>(`/activities/${id}`),
     post: (activity: Activity) => request.post<void>(`/activities/`, activity),
     update: (activity: Activity) => request.put<void>(`/activities/${activity.id}`, activity),

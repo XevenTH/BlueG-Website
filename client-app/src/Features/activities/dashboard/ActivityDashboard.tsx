@@ -1,53 +1,25 @@
-import React from "react";
+import { observer } from "mobx-react-lite";
 import { Grid } from "semantic-ui-react";
-import { Activity } from "../../../App/Models/Activity";
+import { UseStore } from "../../../App/Containers/storeContainer";
 import ActivityDetails from "../details/ActivityDetails";
 import ActivityForm from "../form/ActivityForm";
 import ActivityList from "./ActivityList";
 
-interface Props {
-    activities: Activity[];
+export default observer(function ActivityDashboard() {
+    const { activityStore } = UseStore();
+    const { selectedActivity, formMode } = activityStore
 
-    selectedActivity: Activity | undefined
-    formMode: boolean
-    isSubmit: boolean;
-
-    setActivity: (id: string) => void;
-    cancelActivity: () => void;
-    setFormMode: (id: string) => void;
-    setCancelFormMode: () => void;
-    setCreateEdit: (activity: Activity) => void;
-    setDelete: (id: string) => void;
-}
-
-export default function ActivityDashboard({ activities, selectedActivity, formMode,
-    setActivity, cancelActivity, setFormMode, setCancelFormMode, setCreateEdit, setDelete, isSubmit}: Props) {
     return (
         <Grid>
             <Grid.Column width='10'>
-                <ActivityList
-                    activities={activities}
-                    setActivity={setActivity}
-                    setDelete={setDelete}
-                    isSubmit={isSubmit} 
-                />
+                <ActivityList />
             </Grid.Column>
             <Grid.Column width='6'>
                 {selectedActivity && !formMode &&
-                    <ActivityDetails
-                        activities={selectedActivity}
-                        cancelActivity={cancelActivity}
-                        setFormMode={setFormMode}
-                    />}
+                    <ActivityDetails />}
                 {formMode &&
-                    <ActivityForm 
-                    cancelFormMode={setCancelFormMode} 
-                    selectedActivity={selectedActivity} 
-                    setCreateEdit={setCreateEdit}
-                    isSubmit={isSubmit} 
-                    />}
+                    <ActivityForm />}
             </Grid.Column>
         </Grid>
     )
-}
-
+})

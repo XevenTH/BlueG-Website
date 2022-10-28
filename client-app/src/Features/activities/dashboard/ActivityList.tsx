@@ -1,20 +1,17 @@
 import React, { SyntheticEvent, useState } from "react";
 import { Button, Item, Label, Segment } from "semantic-ui-react";
-import { Activity } from "../../../App/Models/Activity";
+import { UseStore } from "../../../App/Containers/storeContainer";
 
-interface Props {
-    activities: Activity[];
-    isSubmit: boolean;
-    setActivity: (id: string) => void;
-    setDelete: (id: string) => void;
-}
-
-export default function ActivityList({ activities, setActivity, setDelete, isSubmit }: Props) {
-    const [deleteTarget, setDeleteTarget] = useState('');
+export default function ActivityList() {
     
-    function newFunction(e: SyntheticEvent<HTMLButtonElement>, activity: string) {
+    const { activityStore } = UseStore();
+    const { sortingActivitiesByDate: activities, isSubmitting, SelectActivityHandler, DeleteActivity } = activityStore
+    
+    const [deleteTarget, setDeleteTarget] = useState('');
+
+    function DeleteFunction(e: SyntheticEvent<HTMLButtonElement>, activityId: string) {
         setDeleteTarget(e.currentTarget.name);
-        setDelete(activity);
+        DeleteActivity(activityId);
     }
 
     return (
@@ -34,12 +31,13 @@ export default function ActivityList({ activities, setActivity, setDelete, isSub
                                 <div>{singleActivity.city}, {singleActivity.venue}</div>
                             </Item.Description>
                             <Item.Extra>
-                                <Button onClick={() => setActivity(singleActivity.id)} floated='right' content='Join' color='green' />
-                                <Button 
-                                name = {singleActivity.id}
-                                onClick={(e) => newFunction(e, singleActivity.id)} 
-                                loading={isSubmit && deleteTarget === singleActivity.id} 
-                                floated='right' content='Delete' color='red' 
+                                <Button onClick={() => SelectActivityHandler(singleActivity.id)}
+                                    floated='right' content='Join' color='green' />
+                                <Button
+                                    name={singleActivity.id}
+                                    onClick={(e) => DeleteFunction(e, singleActivity.id)}
+                                    loading={isSubmitting && deleteTarget === singleActivity.id}
+                                    floated='right' content='Delete' color='red'
                                 />
                                 <Label style={{ 'marginTop': '0.5rem' }} as='a' content={singleActivity.category} color='red' tag />
                             </Item.Extra>

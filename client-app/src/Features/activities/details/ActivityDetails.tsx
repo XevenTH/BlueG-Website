@@ -1,14 +1,15 @@
 import React from "react";
 import { Button, Card, Image } from "semantic-ui-react";
-import { Activity } from "../../../App/Models/Activity";
+import { UseStore } from "../../../App/Containers/storeContainer";
+import LoadingScreen from "../../../App/Layout/loadingCompo";
 
-interface Props {
-    activities: Activity;
-    cancelActivity: () => void;
-    setFormMode: (id: string) => void;
-}
+export default function ActivityDetails() {
 
-export default function ActivityDetails({ activities, cancelActivity, setFormMode }: Props) {
+    const { activityStore } = UseStore();
+    const { selectedActivity: activities } = activityStore;
+
+    if (!activities) return <LoadingScreen />;
+
     return (
         <Card style={{ 'width': '100%' }}>
             <Image src={`/assets/categoryImages/${activities.category}.jpg`} />
@@ -18,8 +19,11 @@ export default function ActivityDetails({ activities, cancelActivity, setFormMod
                 <Card.Description>{activities.description}</Card.Description>
             </Card.Content>
             <Card.Content extra>
-                <Button onClick={cancelActivity} basic icon='cancel' color='grey' content='Cancel' labelPosition='left' />
-                <Button onClick={() => setFormMode(activities.id)} basic icon='pencil alternate' color='blue' content='Edit' floated='right' labelPosition='right' />
+                <Button onClick={activityStore.CancelActivityHandler}
+                    basic icon='cancel' color='grey' content='Cancel' labelPosition='left' />
+
+                <Button onClick={() => activityStore.FormModeHandler(activities.id)}
+                    basic icon='pencil alternate' color='blue' content='Edit' floated='right' labelPosition='right' />
             </Card.Content>
         </Card>
     )

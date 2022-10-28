@@ -1,11 +1,10 @@
 import React from 'react'
 import { Button, Container, Menu } from "semantic-ui-react";
+import { UseStore } from '../Containers/storeContainer';
 
-interface Props {
-    formMode: () => void;
-}
+export default function NavBar() {
+    const { activityStore } = UseStore();
 
-export default function NavBar({ formMode }: Props) {
     return (
         <Menu inverted fixed='top'>
             <Container>
@@ -15,7 +14,7 @@ export default function NavBar({ formMode }: Props) {
                 </Menu.Item>
                 <Menu.Item name='Activities' />
                 <Menu.Item>
-                    <Button onClick={formMode} positive content='Create Room'></Button>
+                    <Button onClick={() => activityStore.FormModeHandler()} positive content='Create Room' />
                 </Menu.Item>
             </Container>
         </Menu>

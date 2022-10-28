@@ -1,22 +1,21 @@
-import React, { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Button, Form, Segment } from "semantic-ui-react";
-import { Activity, GetInitialModel } from "../../../App/Models/Activity";
+import { UseStore } from "../../../App/Containers/storeContainer";
+import { GetInitialModel } from "../../../App/Models/Activity";
+import { observer } from 'mobx-react-lite';
 
-interface Props {
-    selectedActivity: Activity | undefined
-    cancelFormMode: () => void;
-    setCreateEdit: (activity: Activity) => void;
-    isSubmit: boolean
-}
 
-export default function ActivityForm({ selectedActivity, cancelFormMode, setCreateEdit, isSubmit}: Props) {
+export default observer(function ActivityForm() {
+
+    const { activityStore } = UseStore();
+    const { selectedActivity, CreateActivity, UpdateActivity, isSubmitting } = activityStore
 
     GetInitialModel(selectedActivity)
 
     const [activity, setActivity] = useState(GetInitialModel(selectedActivity));
 
-    function UpdateActivity() {
-        setCreateEdit(activity);
+    function LocalUpdateActivity() {
+        activity.id ? UpdateActivity(activity) : CreateActivity(activity);
     }
 
     function UpdateChangeHandler(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -27,7 +26,7 @@ export default function ActivityForm({ selectedActivity, cancelFormMode, setCrea
     return (
 
         <Segment>
-            <Form onSubmit={UpdateActivity} autoComplete='off'>
+            <Form onSubmit={LocalUpdateActivity} autoComplete='off'>
                 <Form.Field>
                     <label style={{ 'fontSize': '1.1em' }}>Title</label>
                     <input name='title' value={activity.title} onChange={UpdateChangeHandler} placeholder='Title' />
@@ -52,10 +51,12 @@ export default function ActivityForm({ selectedActivity, cancelFormMode, setCrea
                     <label>Venue</label>
                     <input name='venue' value={activity.venue} onChange={UpdateChangeHandler} placeholder='Venue' />
                 </Form.Field>
-                <Button onClick={cancelFormMode} basic type='button' icon='cancel' color='grey' content='Cancel' labelPosition='left' />
-                <Button loading={isSubmit} basic type='submit' floated='right' icon='hand point left outline' color='green' content='Submit' labelPosition='right' />
+                <Button onClick={activityStore.CancelActivityHandler} 
+                basic type='button' icon='cancel' color='grey' content='Cancel' labelPosition='left' />
+
+                <Button loading={isSubmitting} 
+                basic type='submit' floated='right' icon='hand point left outline' color='green' content='Submit' labelPosition='right' />
             </Form>
         </Segment>
     )
-
-}
+})
