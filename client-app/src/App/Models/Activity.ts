@@ -8,8 +8,8 @@ export interface Activity {
   venue: string;
 }
 
-export function GetInitialModel(Activity?: Activity) {
-  const initialModel = Activity ?? {
+export function GetInitialModel() {
+  const initialModel = {
     id: '',
     title: '',
     date: '',

@@ -1,11 +1,12 @@
-import React, { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useState } from "react";
+import { Link } from "react-router-dom";
 import { Button, Item, Label, Segment } from "semantic-ui-react";
 import { UseStore } from "../../../App/Containers/storeContainer";
 
 export default function ActivityList() {
     
     const { activityStore } = UseStore();
-    const { sortingActivitiesByDate: activities, isSubmitting, SelectActivityHandler, DeleteActivity } = activityStore
+    const { sortingActivitiesByDate: activities, isSubmitting, DeleteActivity } = activityStore
     
     const [deleteTarget, setDeleteTarget] = useState('');
 
@@ -31,7 +32,7 @@ export default function ActivityList() {
                                 <div>{singleActivity.city}, {singleActivity.venue}</div>
                             </Item.Description>
                             <Item.Extra>
-                                <Button onClick={() => SelectActivityHandler(singleActivity.id)}
+                                <Button as={Link} to={`/games/${singleActivity.id}`}
                                     floated='right' content='Join' color='green' />
                                 <Button
                                     name={singleActivity.id}

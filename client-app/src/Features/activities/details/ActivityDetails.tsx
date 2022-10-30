@@ -1,14 +1,22 @@
-import React from "react";
+import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import { Button, Card, Image } from "semantic-ui-react";
 import { UseStore } from "../../../App/Containers/storeContainer";
 import LoadingScreen from "../../../App/Layout/loadingCompo";
 
-export default function ActivityDetails() {
+export default observer(function ActivityDetails() {
 
     const { activityStore } = UseStore();
-    const { selectedActivity: activities } = activityStore;
+    const { selectedActivity: activities, GetActivityById, initialLoading } = activityStore;
+    const { id } = useParams<{ id: string }>();
 
-    if (!activities) return <LoadingScreen />;
+    useEffect(() => {
+        if (id) GetActivityById(id);
+
+    }, [id, GetActivityById])
+
+    if (initialLoading || !activities) return <LoadingScreen content='PLEASE WAIT.....' />;
 
     return (
         <Card style={{ 'width': '100%' }}>
@@ -19,12 +27,12 @@ export default function ActivityDetails() {
                 <Card.Description>{activities.description}</Card.Description>
             </Card.Content>
             <Card.Content extra>
-                <Button onClick={activityStore.CancelActivityHandler}
+                <Button as={Link} to={'/games'}
                     basic icon='cancel' color='grey' content='Cancel' labelPosition='left' />
 
-                <Button onClick={() => activityStore.FormModeHandler(activities.id)}
+                <Button as={Link} to={`/editRoom/${activities.id}`}
                     basic icon='pencil alternate' color='blue' content='Edit' floated='right' labelPosition='right' />
             </Card.Content>
         </Card>
     )
-}
+})

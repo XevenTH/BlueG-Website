@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
+import { v4 as uuid } from "uuid";
 import agent from "../API/APIAgent";
 import { Activity } from "../Models/Activity";
-import { v4 as uuid } from "uuid";
 
 export default class ActivitySotre {
     activitiesMap = new Map<string, Activity>();
@@ -18,7 +18,7 @@ export default class ActivitySotre {
         return Array.from(this.activitiesMap.values()).sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
     }
 
-    getAllActivities = async () => {
+    GetAllActivities = async () => {
         this.SetInitialLoading(true);
         try {
             const datas = await agent.handler.List();
@@ -34,17 +34,48 @@ export default class ActivitySotre {
         }
     }
 
+    GetActivityById = async (id: string) => {
+        let activity = this.activitiesMap.get(id);
+        if(activity) 
+        {
+            this.selectedActivity = activity;
+            return activity;
+        }
+        else
+        {
+            this.SetInitialLoading(true);
+            try {
+                activity = await agent.handler.details(id)
+                this.SetActivityMap(id, activity);
+                runInAction(()=> {
+                    this.selectedActivity = activity;
+                })
+                this.SetInitialLoading(false);
+                return activity;
+            } catch (error) {
+                console.log(error);
+                this.SetInitialLoading(true);
+            }
+        }
+    }
+
     CreateActivity = async (activity: Activity) => {
         this.isSubmitting = true;
         try {
-            activity.id = uuid();
-            await agent.handler.post(activity);
+            let newActivity: Activity = {
+                ...activity,
+                id: uuid(),
+            }
+
+            await agent.handler.post(newActivity);
             runInAction(() => {
-                this.activitiesMap.set(activity.id, activity);
-                this.selectedActivity = activity;
+                this.activitiesMap.set(newActivity.id, newActivity);
+                this.selectedActivity = newActivity;
                 this.formMode = false;
                 this.isSubmitting = false;
             })
+
+            return newActivity;
         }
         catch (err) {
             console.log(err);
@@ -78,10 +109,12 @@ export default class ActivitySotre {
             await agent.handler.delete(id);
             runInAction(() => {
                 this.activitiesMap.delete(id);
-                this.CancelActivityHandler();
+                this.selectedActivity = undefined;
                 this.formMode = false;
                 this.isSubmitting = false;
             })
+
+            return this.activitiesMap.values();
 
         } catch (error) {
             console.log(error);
@@ -91,20 +124,12 @@ export default class ActivitySotre {
         }
     }
 
-    SelectActivityHandler = (id: string) => {
-        this.selectedActivity = this.activitiesMap.get(id);
-    }
-
-    CancelActivityHandler = () => {
-        this.selectedActivity = undefined;
-    }
-
-    FormModeHandler = (id?: string) => {
-        id ? this.SelectActivityHandler(id) : this.CancelActivityHandler();
-        this.formMode = true;
-    }
-
     SetInitialLoading = (state: boolean) => {
         this.initialLoading = state;
+    }
+
+    SetActivityMap = (id: string, activity: Activity) => {
+        activity.date = activity.date.split('T')[0];
+        this.activitiesMap.set(id, activity);
     }
 }
