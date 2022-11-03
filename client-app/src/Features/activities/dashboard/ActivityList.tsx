@@ -1,51 +1,34 @@
-import { SyntheticEvent, useState } from "react";
-import { Link } from "react-router-dom";
-import { Button, Item, Label, Segment } from "semantic-ui-react";
+import { Fragment } from "react";
+import { Header, Item } from "semantic-ui-react";
 import { UseStore } from "../../../App/Containers/storeContainer";
+import SingleActivityList from "./SingleActivityList";
 
 export default function ActivityList() {
-    
-    const { activityStore } = UseStore();
-    const { sortingActivitiesByDate: activities, isSubmitting, DeleteActivity } = activityStore
-    
-    const [deleteTarget, setDeleteTarget] = useState('');
 
-    function DeleteFunction(e: SyntheticEvent<HTMLButtonElement>, activityId: string) {
-        setDeleteTarget(e.currentTarget.name);
-        DeleteActivity(activityId);
-    }
+    const { activityStore } = UseStore();
+    const { groupAllActivities: activities } = activityStore
 
     return (
-        <Segment>
-            <Item.Group divided>
-                {activities.map(singleActivity => (
-                    <Item key={singleActivity.id}>
-                        <Item.Content>
-                            <Item.Header as='a'>
-                                {singleActivity.title}
-                            </Item.Header>
-                            <Item.Meta>
-                                {singleActivity.date}
-                            </Item.Meta>
-                            <Item.Description>
-                                <div>{singleActivity.description}</div>
-                                <div>{singleActivity.city}, {singleActivity.venue}</div>
-                            </Item.Description>
-                            <Item.Extra>
-                                <Button as={Link} to={`/games/${singleActivity.id}`}
-                                    floated='right' content='Join' color='green' />
-                                <Button
-                                    name={singleActivity.id}
-                                    onClick={(e) => DeleteFunction(e, singleActivity.id)}
-                                    loading={isSubmitting && deleteTarget === singleActivity.id}
-                                    floated='right' content='Delete' color='red'
-                                />
-                                <Label style={{ 'marginTop': '0.5rem' }} as='a' content={singleActivity.category} color='red' tag />
-                            </Item.Extra>
-                        </Item.Content>
-                    </Item>
-                ))}
-            </Item.Group>
-        </Segment>
+        <>
+            {activities.map(([dateArray, activitiy]) => (
+
+                //Data Example
+                // [
+                //  ["2021-10-1": [ {Activity}, {Activity} ]],
+                //  ["2021-11-12": [ {Activity}, {Activity} ]],
+                // ]
+
+                <Fragment key={dateArray}>
+                    <Header sub color="green" style={{fontSize: '1.3em'}}>
+                       Hosted At {dateArray}
+                    </Header>
+                    <Item.Group divided>
+                        {activitiy.map(singleActivity => (
+                            <SingleActivityList key={singleActivity.id} singleActivity={singleActivity} />
+                        ))}
+                    </Item.Group>
+                </Fragment>
+            ))}
+        </>
     )
 } 

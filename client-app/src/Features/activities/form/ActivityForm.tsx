@@ -20,7 +20,7 @@ export default observer(function ActivityForm() {
 
     function LocalUpdateActivity() {
         if (activity.id.length === 0) {
-          CreateActivity(activity).then(data => {
+            CreateActivity(activity).then(data => {
                 history.push(`/games/${data!.id}`);
             })
         }

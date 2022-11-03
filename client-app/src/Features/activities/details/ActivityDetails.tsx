@@ -1,9 +1,13 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
-import { Button, Card, Image } from "semantic-ui-react";
+import { useParams } from "react-router-dom";
+import { Grid, GridColumn } from "semantic-ui-react";
 import { UseStore } from "../../../App/Containers/storeContainer";
 import LoadingScreen from "../../../App/Layout/loadingCompo";
+import Chat from "./chat";
+import HeaderCompo from "./header";
+import Info from "./info";
+import Side from "./side";
 
 export default observer(function ActivityDetails() {
 
@@ -19,20 +23,15 @@ export default observer(function ActivityDetails() {
     if (initialLoading || !activities) return <LoadingScreen content='PLEASE WAIT.....' />;
 
     return (
-        <Card style={{ 'width': '100%' }}>
-            <Image src={`/assets/categoryImages/${activities.category}.jpg`} />
-            <Card.Content>
-                <Card.Header>{activities.title}</Card.Header>
-                <Card.Meta>{activities.date}</Card.Meta>
-                <Card.Description>{activities.description}</Card.Description>
-            </Card.Content>
-            <Card.Content extra>
-                <Button as={Link} to={'/games'}
-                    basic icon='cancel' color='grey' content='Cancel' labelPosition='left' />
-
-                <Button as={Link} to={`/editRoom/${activities.id}`}
-                    basic icon='pencil alternate' color='blue' content='Edit' floated='right' labelPosition='right' />
-            </Card.Content>
-        </Card>
+        <Grid>
+            <GridColumn width={10}>
+                <HeaderCompo activity={activities} />
+                <Info activity={activities} />
+                <Chat />
+            </GridColumn>
+            <GridColumn width={6}>
+                <Side />
+            </GridColumn>
+        </Grid>
     )
 })

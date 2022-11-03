@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 import agent from "../API/APIAgent";
 import { Activity } from "../Models/Activity";
 
-export default class ActivitySotre {
+export default class ActivityStore {
     activitiesMap = new Map<string, Activity>();
     selectedActivity: Activity | undefined = undefined;
     initialLoading = false;
@@ -14,19 +14,33 @@ export default class ActivitySotre {
         makeAutoObservable(this)
     }
 
-    get sortingActivitiesByDate()  {
+    get sortingActivitiesByDate() {
         return Array.from(this.activitiesMap.values()).sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
+    }
+
+    get groupAllActivities() {
+        return Object.entries(
+            this.sortingActivitiesByDate.reduce((activitiyAcc, activityCurrentVal) => {
+                const date = activityCurrentVal.date;
+                activitiyAcc[date] = activitiyAcc[date] ?
+                    [...activitiyAcc[date], activityCurrentVal] : [activityCurrentVal];
+
+                return activitiyAcc;
+            }, {} as { [key: string]: Activity[] })
+        )
     }
 
     GetAllActivities = async () => {
         this.SetInitialLoading(true);
         try {
             const datas = await agent.handler.List();
-            datas.forEach(data => {
-                data.date = data.date.split('T')[0];
-                this.activitiesMap.set(data.id, data);
+            runInAction(() => {
+                datas.forEach(data => {
+                    data.date = data.date.split('T')[0];
+                    this.activitiesMap.set(data.id, data);
+                    this.SetInitialLoading(false);
+                })
             })
-            this.SetInitialLoading(false);
         }
         catch (err) {
             console.log(err);
@@ -36,18 +50,16 @@ export default class ActivitySotre {
 
     GetActivityById = async (id: string) => {
         let activity = this.activitiesMap.get(id);
-        if(activity) 
-        {
+        if (activity) {
             this.selectedActivity = activity;
             return activity;
         }
-        else
-        {
+        else {
             this.SetInitialLoading(true);
             try {
                 activity = await agent.handler.details(id)
                 this.SetActivityMap(id, activity);
-                runInAction(()=> {
+                runInAction(() => {
                     this.selectedActivity = activity;
                 })
                 this.SetInitialLoading(false);
