@@ -8,10 +8,10 @@ import Filter from "./filter";
 
 export default observer(function ActivityDashboard() {
     const { activityStore } = UseStore();
-    const {activitiesMap, GetAllActivities, initialLoading} = activityStore;
+    const { activitiesMap, GetAllActivities, initialLoading } = activityStore;
 
     useEffect(() => {
-        if(activitiesMap.size <= 1) GetAllActivities();
+        if (activitiesMap.size <= 1) GetAllActivities();
     }, [activitiesMap.size, GetAllActivities]);
 
     if (initialLoading) return <LoadingScreen content='PLEASE WAIT.....' />

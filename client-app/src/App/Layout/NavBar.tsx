@@ -10,6 +10,7 @@ export default function NavBar() {
                     BlueG
                 </Menu.Item>
                 <Menu.Item as={NavLink} to={'/games'} name='Activities' />
+                <Menu.Item as={NavLink} to={'/testerror'} name='Erorr' />
                 <Menu.Item>
                     <Button as={NavLink} to={'/createroom'} positive content='Create Room' />
                 </Menu.Item>

@@ -1,19 +1,23 @@
+import { createBrowserHistory } from 'history';
 import 'react-calendar/dist/Calendar.css';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { Router } from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.min.css';
 import { container, storeContext } from './App/Containers/storeContainer';
 import App from './App/Layout/App';
 import './App/Layout/Style.css';
 import reportWebVitals from './reportWebVitals';
+
+export const history = createBrowserHistory()
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <storeContext.Provider value={container}>
-    <BrowserRouter>
+    <Router history={history}>
       <App />
-    </BrowserRouter>
+    </Router>
   </storeContext.Provider>
 );
 

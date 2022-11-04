@@ -1,3 +1,4 @@
+using Application.Core;
 using AutoMapper;
 using Domain;
 using MediatR;
@@ -7,12 +8,12 @@ namespace Application.Activities
 {
     public class Delete
     {
-        public class Command : IRequest
+        public class Command : IRequest<ResultValidators<Unit>>
         {
             public Guid Id { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command, ResultValidators<Unit>>
         {
             private readonly DataContext _context;
 
@@ -21,14 +22,16 @@ namespace Application.Activities
                 _context = context;
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<ResultValidators<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
                 Activity activity = await _context.Activities.FindAsync(request.Id);
 
                 _context.Remove(activity);
-                await _context.SaveChangesAsync();
+                var result = await _context.SaveChangesAsync() > 0;
+
+                if(!result) return ResultValidators<Unit>.InValid("Cannot Delete The Activity");
                 
-                return  Unit.Value;
+                return  ResultValidators<Unit>.Valid(Unit.Value);
             }
         }
     }

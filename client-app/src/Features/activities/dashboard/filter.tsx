@@ -7,8 +7,8 @@ export default function Filter() {
             <Menu vertical size="large" style={{ width: '100%', marginTop: '35px' }}>
                 <Header icon='filter' attached color='teal' content='Filter' />
                 <Menu.Item content='All Room' />
-                <Menu.Item content='All Room' />
-                <Menu.Item content='All Room' />
+                <Menu.Item content='Hosted' />
+                <Menu.Item content='On Going' />
             </Menu>
             <Calendar />
         </>
