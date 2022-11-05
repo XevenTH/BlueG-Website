@@ -1,7 +1,7 @@
 export interface Activity {
   id: string;
   title: string;
-  date: string;
+  date: Date | null;
   description: string;
   category: string;
   city: string;
@@ -12,7 +12,7 @@ export function GetInitialModel() {
   const initialModel = {
     id: '',
     title: '',
-    date: '',
+    date: null,
     description: '',
     category: '',
     city: '',

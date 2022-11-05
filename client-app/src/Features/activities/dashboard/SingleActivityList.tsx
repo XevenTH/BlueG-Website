@@ -1,6 +1,7 @@
+import { format } from "date-fns";
 import { SyntheticEvent, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, Icon, Item, Segment, SegmentGroup } from "semantic-ui-react";
+import { Button, Icon, Item, ItemGroup, Segment, SegmentGroup } from "semantic-ui-react";
 import { UseStore } from "../../../App/Containers/storeContainer";
 import { Activity } from "../../../App/Models/Activity";
 
@@ -33,8 +34,10 @@ export default function SingleActivityList({ singleActivity }: Props) {
                 </Item.Group>
             </Segment>
             <Segment>
-                <Icon name="clock" /> {singleActivity.date}
-                <Icon name="location arrow" style={{marginLeft: '1.5em'}} /> location
+                <ItemGroup>
+                    <Icon name="clock" />{format(singleActivity.date!, 'dd MMM yyyy h:mm aa')}
+                    <Icon name="location arrow" style={{ marginLeft: '1.5em' }} />{singleActivity.venue}
+                </ItemGroup>
             </Segment>
             <Segment secondary>
                 <span>

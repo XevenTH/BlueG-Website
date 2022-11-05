@@ -1,4 +1,6 @@
+import { format } from 'date-fns';
 import { observer } from 'mobx-react-lite';
+import { Link } from 'react-router-dom';
 import { Button, Header, Image, Item, Segment } from 'semantic-ui-react';
 import { Activity } from '../../../App/Models/Activity';
 
@@ -33,7 +35,7 @@ export default observer (function HeaderCompo({activity}: Props) {
                                     content={activity.title}
                                     style={{color: 'white'}}
                                 />
-                                <p>{activity.date}</p>
+                                <p>{format(activity.date!, 'dd MMM yyyy')}</p>
                                 <p>
                                     Hosted by <strong>Bob</strong>
                                 </p>
@@ -45,7 +47,7 @@ export default observer (function HeaderCompo({activity}: Props) {
             <Segment clearing attached='bottom'>
                 <Button color='teal'>Join Activity</Button>
                 <Button>Cancel attendance</Button>
-                <Button color='orange' floated='right'>
+                <Button as={Link} to={`/editRoom/${activity.id}`} color='orange' floated='right'>
                     Manage Event
                 </Button>
             </Segment>
