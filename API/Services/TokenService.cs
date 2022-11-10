@@ -35,7 +35,7 @@ namespace API.Services
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
-
+    
             var token = tokenHandler.CreateToken(descriptor);
 
             return tokenHandler.WriteToken(token);
