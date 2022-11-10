@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { Button, Segment } from "semantic-ui-react";
-import * as yup from 'yup';
+import * as Yup from 'yup';
 import ReuseableDate from '../../../App/common/Form/ReuseableDate';
 import ReuseableSelectInput from '../../../App/common/Form/ReuseableSelectInput';
 import ReuseableTextArea from '../../../App/common/Form/ReuseableTextArea';
@@ -25,13 +25,13 @@ export default observer(function ActivityForm() {
         if (id) GetActivityById(id).then(data => setActivity(data!));
     }, [id, GetActivityById])
 
-    const validations = yup.object({
-        title: yup.string().required('This Field Cannot Be Empty'),
-        description: yup.string().required('This Field Cannot Be Empty'),
-        date: yup.string().required('This Field Cannot Be Empty').nullable(),
-        category: yup.string().required('This Field Cannot Be Empty'),
-        city: yup.string().required('This Field Cannot Be Empty'),
-        venue: yup.string().required('This Field Cannot Be Empty'),
+    const validations = Yup.object({
+        title: Yup.string().required('This Field Cannot Be Empty'),
+        description: Yup.string().required('This Field Cannot Be Empty'),
+        date: Yup.string().required('This Field Cannot Be Empty').nullable(),
+        category: Yup.string().required('This Field Cannot Be Empty'),
+        city: Yup.string().required('This Field Cannot Be Empty'),
+        venue: Yup.string().required('This Field Cannot Be Empty'),
     })
 
     function LocalUpdateActivity(activity: Activity) {

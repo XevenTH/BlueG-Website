@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { history } from "../..";
 import { container } from "../Containers/storeContainer";
 import { Activity } from "../Models/Activity";
+import { User, UserFormValues } from "../Models/User";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 
@@ -13,6 +14,13 @@ const loading = (delay: number) => {
         setTimeout(resolve, delay);
     })
 }
+
+axios.interceptors.request.use(config => {
+    const token = container.commonStore.token;
+    if (token) config.headers!.Authorization = `Bearer ${token}`;
+
+    return config
+})
 
 axios.interceptors.response.use(async res => {
     await loading(1000);
@@ -65,7 +73,7 @@ const request = {
     delete: <T>(url: string) => axios.delete<T>(url).then(responsePayload),
 };
 
-const handler = {
+const activityHandler = {
     List: () => request.get<Activity[]>('/activities'),
     details: (id: String) => request.get<Activity>(`/activities/${id}`),
     post: (activity: Activity) => request.post<void>(`/activities/`, activity),
@@ -73,8 +81,15 @@ const handler = {
     delete: (id: string) => request.delete<void>(`/activities/${id}`),
 };
 
+const Account = {
+    login: (user: UserFormValues) => request.post<User>('/account/login', user),
+    register: (user: UserFormValues) => request.post<User>('/account/register', user),
+    getUser: () => request.get<any>('/account'), 
+}
+
 const agent = {
-    handler
+    handler: activityHandler,
+    Account,
 };
 
 export default agent;

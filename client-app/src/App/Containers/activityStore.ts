@@ -7,7 +7,7 @@ import { Activity } from "../Models/Activity";
 export default class ActivityStore {
     activitiesMap = new Map<string, Activity>();
     selectedActivity: Activity | undefined = undefined;
-    initialLoading = false;
+    initialLoading = true;
     formMode: boolean = false;
     isSubmitting: boolean = false;
 
@@ -32,7 +32,6 @@ export default class ActivityStore {
     }
 
     GetAllActivities = async () => {
-        this.SetInitialLoading(true);
         try {
             const datas = await agent.handler.List();
             runInAction(() => {
@@ -55,7 +54,6 @@ export default class ActivityStore {
             return activity;
         }
         else {
-            this.SetInitialLoading(true);
             try {
                 activity = await agent.handler.details(id)
                 runInAction(() => {
@@ -66,7 +64,6 @@ export default class ActivityStore {
                 return activity;
             } catch (error) {
                 console.log(error);
-                this.SetInitialLoading(true);
             }
         }
     }

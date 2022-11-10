@@ -1,7 +1,7 @@
 import { Message, MessageHeader, MessageItem } from "semantic-ui-react";
 
 interface Props {
-    error: string[] | null
+    error: any
 }
 
 export default function ErrorView({ error }: Props) {
@@ -9,9 +9,9 @@ export default function ErrorView({ error }: Props) {
         <Message error>
             {error && (
                 <MessageHeader>
-                    ERRORS!!
+                    ERRORS !!
                     <p></p>
-                    {error.map((x: any, i) => (
+                    {error.map((x: any, i: any) => (
                         <MessageItem key={i}>{x}</MessageItem>
                     ))}
                 </MessageHeader>
