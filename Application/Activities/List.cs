@@ -3,26 +3,33 @@ using MediatR;
 using Domain;
 using Persistence;
 using Application.Core;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
-namespace Application.Activities
+namespace Application.Activities;
+
+public class List
 {
-    public class List
+    public class Query : IRequest<ResultValidators<List<ActivityDTO>>> { }
+
+    public class Handler : IRequestHandler<Query, ResultValidators<List<ActivityDTO>>>
     {
-        public class Query : IRequest<ResultValidators<List<Activity>>> { }
+        private readonly DataContext _context;
+        private readonly IMapper _mapper;
 
-        public class Handler : IRequestHandler<Query, ResultValidators<List<Activity>>>
+        public Handler(DataContext context, IMapper mapper)
         {
-            private readonly DataContext _context;
+            _context = context;
+            _mapper = mapper;
+        }
 
-            public Handler(DataContext context)
-            {
-                _context = context;
-            }
+        public async Task<ResultValidators<List<ActivityDTO>>> Handle(Query request, CancellationToken cancellationToken)
+        {
+            var activity = await _context.Activities
+                .ProjectTo<ActivityDTO>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
 
-            public async Task<ResultValidators<List<Activity>>> Handle(Query request, CancellationToken cancellationToken)
-            {
-                return ResultValidators<List<Activity>>.Valid(await _context.Activities.ToListAsync());
-            }
+            return ResultValidators<List<ActivityDTO>>.Valid(activity);
         }
     }
 }

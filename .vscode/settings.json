@@ -1,0 +1,5 @@
+{
+    "csharpextensions.privateMemberPrefix": "_",
+    "csharpextensions.useFileScopedNamespace": true,
+    "csharpextensions.useThisForCtorAssignments": false
+}

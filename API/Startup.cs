@@ -1,6 +1,5 @@
 using API.Middleware;
 using API.Extensions;
-using API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 
@@ -17,14 +16,13 @@ namespace API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers(opt => {
+            services.AddControllers(opt =>
+            {
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                 opt.Filters.Add(new AuthorizeFilter(policy));
             });
-            services.IdentityService(_config);
             services.UseAppServices(_config);
-
-            services.AddScoped<TokenService>();
+            services.IdentityService(_config);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

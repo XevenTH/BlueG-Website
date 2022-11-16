@@ -2,35 +2,48 @@ using Domain;
 using MediatR;
 using Persistence;
 using Application.Core;
+using Application.Interface;
 
-namespace Application.Activities
+namespace Application.Activities;
+
+public class Create
 {
-    public class Create
+    public class Command : IRequest<ResultValidators<Unit>>
     {
-        public class Command : IRequest<ResultValidators<Unit>>
+        public Activity Activity { get; set; }
+    }
+
+    public class Handler : IRequestHandler<Command, ResultValidators<Unit>>
+    {
+        private readonly DataContext _context;
+        private readonly IUserNameAccessor _userNameAccessor;
+
+        public Handler(DataContext context, IUserNameAccessor userNameAccessor)
         {
-            public Activity Activity { get; set; }
+            _context = context;
+            _userNameAccessor = userNameAccessor;
         }
 
-        public class Handler : IRequestHandler<Command, ResultValidators<Unit>>
+        public async Task<ResultValidators<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            private readonly DataContext _context;
+            var user = _context.Users.FirstOrDefault(x => x.UserName == _userNameAccessor.GetUserName());
 
-            public Handler(DataContext context)
+            var attendee = new UserActivities
             {
-                _context = context;
-            }
+                Users = user,
+                Activities = request.Activity,
+                IsHost = true
+            };
 
-            public async Task<ResultValidators<Unit>> Handle(Command request, CancellationToken cancellationToken)
-            {
-                _context.Activities.Add(request.Activity);
+            request.Activity.Attendees.Add(attendee);
 
-                bool result = await _context.SaveChangesAsync() > 0;
+            _context.Activities.Add(request.Activity);
 
-                if(!result) ResultValidators<Unit>.InValid("Data Is Not Valid");
+            bool result = await _context.SaveChangesAsync() > 0;
 
-                return ResultValidators<Unit>.Valid(Unit.Value);
-            }
+            if (!result) ResultValidators<Unit>.InValid("Data Is Not Valid");
+
+            return ResultValidators<Unit>.Valid(Unit.Value);
         }
     }
 }
