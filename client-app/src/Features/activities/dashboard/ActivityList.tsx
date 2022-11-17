@@ -6,7 +6,7 @@ import SingleActivityList from "./SingleActivityList";
 export default function ActivityList() {
 
     const { activityStore } = UseStore();
-    const { groupAllActivities: activities } = activityStore
+    const { groupAllActivities: activities} = activityStore
 
     return (
         <>

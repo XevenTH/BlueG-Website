@@ -1,9 +1,9 @@
 import { format } from "date-fns";
-import { SyntheticEvent, useState } from "react";
-import { Link } from "react-router-dom";
-import { Button, Icon, Item, ItemGroup, Segment, SegmentGroup } from "semantic-ui-react";
+import { Button, Icon, Item, ItemDescription, ItemGroup, Label, Segment, SegmentGroup } from "semantic-ui-react";
+import { history } from "../../..";
 import { UseStore } from "../../../App/Containers/storeContainer";
 import { Activity } from "../../../App/Models/Activity";
+import SingleActivityListItem from "./SingleActivityListItem";
 
 interface Props {
     singleActivity: Activity;
@@ -11,24 +11,29 @@ interface Props {
 
 export default function SingleActivityList({ singleActivity }: Props) {
     const { activityStore } = UseStore();
-    const { isSubmitting, DeleteActivity } = activityStore
-
-    const [deleteTarget, setDeleteTarget] = useState('');
-
-    function DeleteFunction(e: SyntheticEvent<HTMLButtonElement>, activityId: string) {
-        setDeleteTarget(e.currentTarget.name);
-        DeleteActivity(activityId);
-    }
+    const { isSubmitting } = activityStore
 
     return (
         <SegmentGroup>
             <Segment>
+                {singleActivity.isCancelled && 
+                    <Label color='red' attached='top' style={{textAlign: 'center', fontSize: '14px'}}
+                        content='This Activity Is No Longer Available' />
+                }
                 <Item.Group>
                     <Item>
                         <Item.Image size='tiny' circular src='/assets/user.png' />
                         <Item.Content>
-                            <Item.Header content={singleActivity.title} as={Link} to={`/games/${singleActivity.id}`} />
+                            <Item.Header content={singleActivity.title} />
                             <Item.Description content='Hosted By User' />
+                            <ItemDescription>
+                                {singleActivity.isHosting && (
+                                    <Label color="orange" content="You Hosting This Event" basic />
+                                )}
+                                {singleActivity.isJoined && singleActivity.isHosting !== true && (
+                                    <Label color="green" content="You Joined This Event" basic />
+                                )}
+                            </ItemDescription>
                         </Item.Content>
                     </Item>
                 </Item.Group>
@@ -41,7 +46,7 @@ export default function SingleActivityList({ singleActivity }: Props) {
             </Segment>
             <Segment secondary>
                 <span>
-                    Waiters.....
+                    <SingleActivityListItem profile={singleActivity.attendees!} />
                 </span>
             </Segment>
             <Segment clearing>
@@ -49,10 +54,9 @@ export default function SingleActivityList({ singleActivity }: Props) {
                     {singleActivity.description}
                 </span>
                 <Button
-                    name={singleActivity.id}
-                    onClick={(e) => DeleteFunction(e, singleActivity.id)}
-                    loading={isSubmitting && deleteTarget === singleActivity.id}
-                    floated='right' content='Delete' color='red'
+                    loading={isSubmitting}
+                    onClick={() => history.push(`/games/${singleActivity.id}`)}
+                    floated='right' content='View' color='teal'
                 />
             </Segment>
         </SegmentGroup>

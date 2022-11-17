@@ -11,7 +11,7 @@ import ReuseableTextInput from '../../../App/common/Form/ReuseableTextInput';
 import { Options } from '../../../App/common/Options/SelectInputOptions';
 import { UseStore } from "../../../App/Containers/storeContainer";
 import LoadingScreen from "../../../App/Layout/loadingCompo";
-import { Activity, GetInitialModel } from "../../../App/Models/Activity";
+import { ActivityFormValues } from "../../../App/Models/Activity";
 
 export default observer(function ActivityForm() {
     const history = useHistory();
@@ -19,10 +19,10 @@ export default observer(function ActivityForm() {
     const { UpdateActivity, CreateActivity, GetActivityById, initialLoading } = activityStore
     const { id } = useParams<{ id: string }>();
 
-    const [activity, setActivity] = useState<Activity>(GetInitialModel());
+    const [activity, setActivity] = useState<ActivityFormValues>(new ActivityFormValues());
 
     useEffect(() => {
-        if (id) GetActivityById(id).then(data => setActivity(data!));
+        if (id) GetActivityById(id).then(data => setActivity(new ActivityFormValues(data)));
     }, [id, GetActivityById])
 
     const validations = Yup.object({
@@ -34,8 +34,8 @@ export default observer(function ActivityForm() {
         venue: Yup.string().required('This Field Cannot Be Empty'),
     })
 
-    function LocalUpdateActivity(activity: Activity) {
-        if (activity.id.length === 0) {
+    function LocalUpdateActivity(activity: ActivityFormValues) {
+        if (!activity.id) {
             CreateActivity(activity).then(data => {
                 history.push(`/games/${data!.id}`);
             })

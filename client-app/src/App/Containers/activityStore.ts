@@ -2,7 +2,9 @@ import { format } from "date-fns";
 import { makeAutoObservable, runInAction } from "mobx";
 import { v4 as uuid } from "uuid";
 import agent from "../API/APIAgent";
-import { Activity } from "../Models/Activity";
+import { Activity, ActivityFormValues } from "../Models/Activity";
+import { Profile } from "../Models/profile";
+import { container } from "./storeContainer";
 
 export default class ActivityStore {
     activitiesMap = new Map<string, Activity>();
@@ -48,67 +50,61 @@ export default class ActivityStore {
     }
 
     GetActivityById = async (id: string) => {
+        this.SetInitialLoading(false);
         let activity = this.activitiesMap.get(id);
         if (activity) {
             this.selectedActivity = activity;
+            this.SetInitialLoading(false);
             return activity;
         }
         else {
             try {
-                activity = await agent.handler.details(id)
+                activity = await agent.handler.details(id);
                 runInAction(() => {
                     this.SetActivityMap(activity!);
                     this.selectedActivity = activity;
+                    this.SetInitialLoading(false);
                 })
-                this.SetInitialLoading(false);
                 return activity;
             } catch (error) {
                 console.log(error);
             }
         }
     }
-
-    CreateActivity = async (activity: Activity) => {
-        this.isSubmitting = true;
+    
+    CreateActivity = async (activity: ActivityFormValues) => {
+        const host = new Profile(container.userStore.user!);
         try {
-            let newActivity: Activity = {
-                ...activity,
-                id: uuid(),
-            }
-
-            await agent.handler.post(newActivity);
+            await agent.handler.post(activity);
+            let newActivity = new Activity(activity);
+            newActivity.id = uuid();
+            newActivity.attendees = [host];
+            newActivity.hostUserName = host.userName;
+            newActivity.isHosting = true;
+            this.SetActivityMap(newActivity);
             runInAction(() => {
-                this.activitiesMap.set(newActivity.id, newActivity);
                 this.selectedActivity = newActivity;
-                this.formMode = false;
-                this.isSubmitting = false;
             })
 
             return newActivity;
         }
         catch (err) {
             console.log(err);
-            runInAction(() => {
-                this.isSubmitting = false;
-            })
         }
     }
 
-    UpdateActivity = async (activity: Activity) => {
-        this.isSubmitting = true;
+    UpdateActivity = async (activity: ActivityFormValues) => {
         try {
             await agent.handler.update(activity);
             runInAction(() => {
-                this.activitiesMap.set(activity.id, activity);
-                this.selectedActivity = activity;
-                this.formMode = false;
-                this.isSubmitting = false;
+                if(activity.id) {
+                    let updateActivity = {...this.activitiesMap.get(activity.id), ...activity};
+                    this.activitiesMap.set(activity.id, updateActivity as Activity);
+                    this.selectedActivity = updateActivity as Activity;
+                }
             })
         } catch (error) {
             console.log(error);
-            runInAction(() => {
-                this.isSubmitting = false;
-            })
         }
     }
 
@@ -133,11 +129,72 @@ export default class ActivityStore {
         }
     }
 
-    SetInitialLoading = (state: boolean) => {
-        this.initialLoading = state;
+    attendActivityAction = async () => {
+        var user = container.userStore.user;
+        this.isSubmitting = true;
+        try {
+            await agent.handler.attend(this.selectedActivity!.id);
+            runInAction(() => {
+                if(this.selectedActivity?.isJoined)
+                {
+                    this.selectedActivity.attendees = this.selectedActivity
+                        .attendees?.filter(x => x.userName !== user?.userName);
+                    this.selectedActivity.isJoined = false;
+                }
+                else {
+                    const newUser = new Profile(user!);
+                    this.selectedActivity?.attendees?.push(newUser);
+                    this.selectedActivity!.isJoined = true;
+                }
+                this.activitiesMap.set(this.selectedActivity!.id, this.selectedActivity!);
+            })
+        } 
+        catch (error) {
+            console.log(error);
+        } 
+        finally {
+            runInAction(() => this.isSubmitting = false); 
+        }
+    }
+
+    CancelToggle = async () => {
+        this.isSubmitting = true;
+        try {
+            await agent.handler.attend(this.selectedActivity!.id);
+            runInAction(() => {
+                this.selectedActivity!.isCancelled = !this.selectedActivity?.isCancelled;
+                this.activitiesMap.set(this.selectedActivity!.id, this.selectedActivity!);
+            })
+        } 
+        catch (error) {
+            console.log(error);
+        } 
+        finally {
+            runInAction(() => {
+                this.isSubmitting = false;
+            })
+        }
+    }
+
+    SetInitialLoading = async (state: boolean) => {
+        return this.initialLoading = state;
+    }
+
+    timer = (delay: number) => {
+        return new Promise((resolver) => {
+            setTimeout(resolver, delay);
+        })
     }
 
     SetActivityMap = (activity: Activity) => {
+        var user = container.userStore.user;
+        if(user)
+        {
+            activity.isHosting = user.userName === activity.hostUserName;
+            activity.isJoined = activity.attendees?.some(x => x.userName === user?.userName);
+            activity.hostProfile = activity.attendees?.find(x => x.userName === activity.hostUserName);
+        }
+
         activity.date = new Date(activity.date!);
         this.activitiesMap.set(activity.id, activity);
     }
