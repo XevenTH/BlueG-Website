@@ -44,8 +44,8 @@ public class UpdateAttendees
                 activity.IsCancelled = !activity.IsCancelled;
 
             if(hostUserName != null && hostUserName != requestUser.UserName)
-
                 activity.Attendees.Remove(user);
+                
             if(user == null)
             {
                 user = new UserActivities
