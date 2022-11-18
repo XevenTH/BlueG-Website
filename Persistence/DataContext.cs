@@ -6,16 +6,17 @@ namespace Persistence
 {
     public class DataContext : IdentityDbContext<UserApp>
     {
-        public DataContext(DbContextOptions options) : base(options) {}
+        public DataContext(DbContextOptions options) : base(options) { }
 
         public DbSet<Activity> Activities { get; set; }
         public DbSet<UserActivities> UserActivities { get; set; }
+        public DbSet<Photo> Photos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<UserActivities>(x => x.HasKey(ua => new {ua.UserAppId, ua.ActivitiesId}));
+            builder.Entity<UserActivities>(x => x.HasKey(ua => new { ua.UserAppId, ua.ActivitiesId }));
 
             builder.Entity<UserActivities>()
                 .HasOne(u => u.Users)
