@@ -10,7 +10,6 @@ interface Props {
 
 export default observer(function SingleActivityListItem({ profile: profiles }: Props) {
     return (
-
         <List horizontal>
             {profiles.map(profile =>
                 <Popup

@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { history } from "../..";
 import { container } from "../Containers/storeContainer";
 import { Activity, ActivityFormValues } from "../Models/Activity";
-import { Photo, Profile } from "../Models/profile";
+import { AboutInitialModel, Photo, Profile } from "../Models/profile";
 import { User, UserFormValues } from "../Models/User";
 
 axios.defaults.baseURL = "http://localhost:5000/api";
@@ -88,6 +88,7 @@ const Account = {
 
 const Profiles = {
     profile: (username: string) => request.get<Profile>(`/profiles/${username}`),
+    updateBio: (value: AboutInitialModel) => request.put('/profiles', value),
     uploadPhoto: (File: Blob) => {
         let formData = new FormData();
         formData.append('File', File);

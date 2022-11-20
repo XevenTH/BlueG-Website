@@ -1,5 +1,6 @@
 using Application.Activities;
 using Application.Activities.DTO;
+using Application.Profiles.DTO;
 using AutoMapper;
 using Domain;
 
@@ -10,6 +11,8 @@ namespace Application.Core
         public MappingProfiles()
         {
             CreateMap<Activity, Activity>();
+
+            CreateMap<AboutDTO, UserApp>();
 
             CreateMap<Activity, ActivityDTO>()
                 .ForMember(ad => ad.HostUserName, 

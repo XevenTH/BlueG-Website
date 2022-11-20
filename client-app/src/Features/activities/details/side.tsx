@@ -34,10 +34,10 @@ export default observer(function ActivityDetailedSidebar({ activity: { attendees
                                     Host
                                 </Label>
                             )}
-                            <Image size='tiny' src={ profile.image ||'/assets/user.png'} />
+                            <Image size='tiny' src={ profile.image || '/assets/user.png'} />
                             <Item.Content verticalAlign='middle'>
                                 <Item.Header as='h3'>
-                                    <Link to={`profile/${profile.userName}`}>{profile.displayName}</Link>
+                                    <Link to={`/profile/${profile.userName}`}>{profile.displayName}</Link>
                                 </Item.Header>
                                 <Item.Extra style={{ color: 'orange' }}>Following</Item.Extra>
                             </Item.Content>

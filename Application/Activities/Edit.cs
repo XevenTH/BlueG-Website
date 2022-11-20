@@ -33,7 +33,7 @@ namespace Application.Activities
                 
                 var result = await _context.SaveChangesAsync() > 0;
 
-                if(!result) return ResultValidators<Unit>.InValid("Canno't Edit Activity");
+                if(!result) return ResultValidators<Unit>.InValid("Can't Edit Activity");
 
                 return ResultValidators<Unit>.Valid(Unit.Value);
             }

@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import agent from "../API/APIAgent";
-import { Photo, Profile } from "../Models/profile";
+import { AboutInitialModel, Photo, Profile } from "../Models/profile";
 import { container } from "./storeContainer";
 
 export default class ProfileStore {
@@ -27,10 +27,27 @@ export default class ProfileStore {
                 this.profile = profile;
                 this.loadProfile = false;
             })
+
+            return profile;
         }
         catch (error) {
             console.log(error);
             runInAction(() => this.loadProfile = false)
+        }
+    }
+
+    UpdateBio = async (value: AboutInitialModel) => {
+        const user = container.userStore.user;
+        try {
+            await agent.Profiles.updateBio(value);
+            runInAction(() => {
+                if (this.profile && this.profile.userName !== user?.userName) {
+                    container.userStore.setDisplayName(value.displayName);
+                }
+                if(value) this.profile = {...this.profile, ...value as Profile}
+            })
+        } catch (error) {
+            console.log(error);
         }
     }
 
