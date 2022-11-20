@@ -19,11 +19,9 @@ public class Details
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        private readonly IUserNameAccessor _userNameAccessor;
 
-        public Handler(DataContext context, IMapper mapper, IUserNameAccessor userNameAccessor)
+        public Handler(DataContext context, IMapper mapper)
         {
-            _userNameAccessor = userNameAccessor;
             _context = context;
             _mapper = mapper;
         }
@@ -32,7 +30,7 @@ public class Details
         {
             var user = await _context.Users
                 .ProjectTo<Profile>(_mapper.ConfigurationProvider)
-                .SingleOrDefaultAsync(x => x.UserName == _userNameAccessor.GetUserName());
+                .SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
             return ResultValidators<Profile>.Valid(user);
         }
