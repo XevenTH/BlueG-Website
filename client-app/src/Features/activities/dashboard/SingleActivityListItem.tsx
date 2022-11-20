@@ -21,8 +21,7 @@ export default observer(function SingleActivityListItem({ profile: profiles }: P
                         <ListItem key={profile.userName} as={Link} to={`profile/${profile.userName}`}>
                             <Image size="mini" circular src={profile.image || "/assets/user.png"} />
                         </ListItem>
-                    }
-                >
+                    }>
                     <PopupContent>
                         <ProfileCard profile={profile} />
                     </PopupContent>

@@ -55,4 +55,8 @@ export default class UserStore {
         this.user = null;
         history.push('/');
     }
+
+    SetPhotoProfile = (image: string) => {
+        if(this.user) this.user.image = image
+    }
 }

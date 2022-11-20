@@ -1,9 +1,10 @@
+import { observer } from "mobx-react-lite";
 import { Fragment } from "react";
 import { Header, Item } from "semantic-ui-react";
 import { UseStore } from "../../../App/Containers/storeContainer";
 import SingleActivityList from "./SingleActivityList";
 
-export default function ActivityList() {
+export default observer(function ActivityList() {
 
     const { activityStore } = UseStore();
     const { groupAllActivities: activities} = activityStore
@@ -31,4 +32,4 @@ export default function ActivityList() {
             ))}
         </>
     )
-} 
+})

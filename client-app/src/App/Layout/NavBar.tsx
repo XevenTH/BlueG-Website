@@ -1,8 +1,9 @@
+import { observer } from 'mobx-react-lite';
 import { Link, NavLink } from 'react-router-dom';
 import { Button, Container, Dropdown, DropdownItem, DropdownMenu, Image, Menu } from "semantic-ui-react";
 import { UseStore } from '../Containers/storeContainer';
 
-export default function NavBar() {
+export default observer(function NavBar() {
     const { userStore: { user, logout } } = UseStore();
 
     return (
@@ -30,4 +31,4 @@ export default function NavBar() {
             </Container>
         </Menu>
     )
-}
+})

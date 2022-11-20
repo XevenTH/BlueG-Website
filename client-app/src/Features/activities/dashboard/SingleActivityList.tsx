@@ -1,4 +1,6 @@
 import { format } from "date-fns";
+import { observer } from "mobx-react-lite";
+import { Link } from "react-router-dom";
 import { Button, Icon, Item, ItemDescription, ItemGroup, Label, Segment, SegmentGroup } from "semantic-ui-react";
 import { history } from "../../..";
 import { UseStore } from "../../../App/Containers/storeContainer";
@@ -9,23 +11,27 @@ interface Props {
     singleActivity: Activity;
 }
 
-export default function SingleActivityList({ singleActivity }: Props) {
+export default observer(function SingleActivityList({ singleActivity }: Props) {
     const { activityStore } = UseStore();
     const { isSubmitting } = activityStore
 
     return (
         <SegmentGroup>
             <Segment>
-                {singleActivity.isCancelled && 
-                    <Label color='red' attached='top' style={{textAlign: 'center', fontSize: '14px'}}
+                {singleActivity.isCancelled &&
+                    <Label color='red' attached='top' style={{ textAlign: 'center', fontSize: '14px' }}
                         content='This Activity Is No Longer Available' />
                 }
                 <Item.Group>
                     <Item>
-                        <Item.Image size='tiny' circular src='/assets/user.png' />
+                        <Item.Image style={{ marginBottom: 5 }}
+                            size='tiny' circular src={singleActivity.hostProfile?.image || '/assets/user.png'} />
                         <Item.Content>
                             <Item.Header content={singleActivity.title} />
-                            <Item.Description content='Hosted By User' />
+                            <ItemDescription>
+                                Hosted By <Link to={`/profile/${singleActivity.hostProfile?.userName}`}>
+                                    {singleActivity.hostProfile?.displayName}</Link>
+                            </ItemDescription>
                             <ItemDescription>
                                 {singleActivity.isHosting && (
                                     <Label color="orange" content="You Hosting This Event" basic />
@@ -61,4 +67,4 @@ export default function SingleActivityList({ singleActivity }: Props) {
             </Segment>
         </SegmentGroup>
     )
-}
+})
