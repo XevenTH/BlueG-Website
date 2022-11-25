@@ -11,14 +11,14 @@ import Side from "./side";
 
 export default observer(function ActivityDetails() {
 
-    const { activityStore } = UseStore();
-    const { selectedActivity: activities, GetActivityById, initialLoading } = activityStore;
+    const { activityStore: { selectedActivity: activities, GetActivityById, initialLoading, ClearSelectedActivity } } = UseStore();
     const { id } = useParams<{ id: string }>();
 
     useEffect(() => {
         if (id) GetActivityById(id);
+        return () => ClearSelectedActivity();
 
-    }, [id, GetActivityById])
+    }, [id, GetActivityById, ClearSelectedActivity])
 
     if (initialLoading || !activities) return <LoadingScreen content='PLEASE WAIT.....' />;
 
@@ -27,7 +27,7 @@ export default observer(function ActivityDetails() {
             <GridColumn width={10}>
                 <HeaderCompo activity={activities} />
                 <Info activity={activities} />
-                <Chat />
+                <Chat activityId={activities.id} />
             </GridColumn>
             <GridColumn width={6}>
                 <Side activity={activities} />

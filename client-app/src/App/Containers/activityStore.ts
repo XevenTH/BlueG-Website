@@ -198,4 +198,8 @@ export default class ActivityStore {
         activity.date = new Date(activity.date!);
         this.activitiesMap.set(activity.id, activity);
     }
+
+    ClearSelectedActivity = () => {
+        this.selectedActivity = undefined;
+    }
 }

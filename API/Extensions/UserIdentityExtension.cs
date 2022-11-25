@@ -33,6 +33,21 @@ public static class UserIdentityExtension
                     ValidateIssuer = false,
                     ValidateAudience = false,
                 };
+
+                opt.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context => 
+                    {
+                        var token = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if(!string.IsNullOrEmpty(token) && path.StartsWithSegments("/chat"))
+                        {
+                            context.Token = token;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
         services.AddAuthorization(opt =>

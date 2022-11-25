@@ -11,4 +11,5 @@ public class Activity
     public string Venue { get; set; }
     public bool IsCancelled { get; set; }
     public ICollection<UserActivities> Attendees { get; set; } = new List<UserActivities>();
+    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
 }
