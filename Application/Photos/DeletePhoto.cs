@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
-namespace Application.Cloudinary;
+namespace Application.Photos;
 
 public class DeletePhoto
 {

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
-namespace Application.Cloudinary;
+namespace Application.Photos;
 
 public class AddPhoto
 {

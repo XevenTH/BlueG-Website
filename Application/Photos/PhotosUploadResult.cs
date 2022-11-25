@@ -1,4 +1,4 @@
-namespace Application.Cloudinary;
+namespace Application.Photos;
 
 public class PhotosUploadResult
 {

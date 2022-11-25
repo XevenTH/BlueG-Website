@@ -1,11 +1,11 @@
-using Application.Cloudinary;
+using Application.Photos;
 using Application.Interface;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace Infrastructure.Photos;
+namespace Infrastructure.Claudinary;
 
 public class PhotoAccessor : IPhotosAccessor
 {

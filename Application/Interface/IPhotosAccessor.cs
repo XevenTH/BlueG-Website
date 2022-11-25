@@ -1,4 +1,4 @@
-using Application.Cloudinary;
+using Application.Photos;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Interface;
