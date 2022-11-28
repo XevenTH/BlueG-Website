@@ -9,6 +9,11 @@ interface Props {
 }
 
 export default observer(function SingleActivityListItem({ profile: profiles }: Props) {
+    const style = {
+        borderColor: 'orange',
+        borderWidth: 2,
+    }
+
     return (
         <List horizontal>
             {profiles.map(profile =>
@@ -18,7 +23,9 @@ export default observer(function SingleActivityListItem({ profile: profiles }: P
                     size='tiny'
                     trigger={
                         <ListItem key={profile.userName} as={Link} to={`profile/${profile.userName}`}>
-                            <Image size="mini" circular src={profile.image || "/assets/user.png"} />
+                            <Image src={profile.image || "/assets/user.png"}
+                                size="mini" circular bordered style={profile.following ? style : null}
+                            />
                         </ListItem>
                     }>
                     <PopupContent>

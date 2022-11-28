@@ -71,7 +71,7 @@ export default class ActivityStore {
             }
         }
     }
-    
+
     CreateActivity = async (activity: ActivityFormValues) => {
         const host = new Profile(container.userStore.user!);
         try {
@@ -97,8 +97,8 @@ export default class ActivityStore {
         try {
             await agent.handler.update(activity);
             runInAction(() => {
-                if(activity.id) {
-                    let updateActivity = {...this.activitiesMap.get(activity.id), ...activity};
+                if (activity.id) {
+                    let updateActivity = { ...this.activitiesMap.get(activity.id), ...activity };
                     this.activitiesMap.set(activity.id, updateActivity as Activity);
                     this.selectedActivity = updateActivity as Activity;
                 }
@@ -135,8 +135,7 @@ export default class ActivityStore {
         try {
             await agent.handler.attend(this.selectedActivity!.id);
             runInAction(() => {
-                if(this.selectedActivity?.isJoined)
-                {
+                if (this.selectedActivity?.isJoined) {
                     this.selectedActivity.attendees = this.selectedActivity
                         .attendees?.filter(x => x.userName !== user?.userName);
                     this.selectedActivity.isJoined = false;
@@ -148,12 +147,12 @@ export default class ActivityStore {
                 }
                 this.activitiesMap.set(this.selectedActivity!.id, this.selectedActivity!);
             })
-        } 
+        }
         catch (error) {
             console.log(error);
-        } 
+        }
         finally {
-            runInAction(() => this.isSubmitting = false); 
+            runInAction(() => this.isSubmitting = false);
         }
     }
 
@@ -165,10 +164,10 @@ export default class ActivityStore {
                 this.selectedActivity!.isCancelled = !this.selectedActivity?.isCancelled;
                 this.activitiesMap.set(this.selectedActivity!.id, this.selectedActivity!);
             })
-        } 
+        }
         catch (error) {
             console.log(error);
-        } 
+        }
         finally {
             runInAction(() => {
                 this.isSubmitting = false;
@@ -188,8 +187,7 @@ export default class ActivityStore {
 
     SetActivityMap = (activity: Activity) => {
         var user = container.userStore.user;
-        if(user)
-        {
+        if (user) {
             activity.isHosting = user.userName === activity.hostUserName;
             activity.isJoined = activity.attendees?.some(x => x.userName === user?.userName);
             activity.hostProfile = activity.attendees?.find(x => x.userName === activity.hostUserName);
@@ -201,5 +199,16 @@ export default class ActivityStore {
 
     ClearSelectedActivity = () => {
         this.selectedActivity = undefined;
+    }
+
+    updateAttendee = (username: string) => {
+        this.activitiesMap.forEach(acticity => {
+            acticity.attendees.forEach(profile => {
+                if (profile.userName === username) {
+                    profile.following ? profile.followersCount-- : profile.followersCount++;
+                    profile.following = !profile.following;
+                }
+            })
+        })
     }
 }

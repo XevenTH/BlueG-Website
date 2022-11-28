@@ -12,6 +12,7 @@ namespace Persistence
         public DbSet<UserActivities> UserActivities { get; set; }
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<UserFollow> UserFollows { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -32,6 +33,20 @@ namespace Persistence
             builder.Entity<Comment>()
                 .HasOne(a => a.Activity)
                 .WithMany(c => c.Comments)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserFollow>(x => x.HasKey(uf => new { uf.ObserverId, uf.TargetId }));
+
+            builder.Entity<UserFollow>()
+                .HasOne(o => o.Observer)
+                .WithMany(f => f.Followings)
+                .HasForeignKey(o => o.ObserverId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserFollow>()
+                .HasOne(o => o.Target)
+                .WithMany(f => f.Followers)
+                .HasForeignKey(o => o.TargetId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

@@ -1,0 +1,56 @@
+using Application.Core;
+using Application.Interface;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Persistence;
+
+namespace Application.Followers;
+
+public class List
+{
+    public class Query : IRequest<ResultValidators<List<Profiles.Profile>>>
+    {
+        public string Predicate { get; set; }
+        public string UserName { get; set; }
+    }
+
+    public class Handler : IRequestHandler<Query, ResultValidators<List<Profiles.Profile>>>
+    {
+        private readonly DataContext _context;
+        private readonly IMapper _mapper;
+        private readonly IUserNameAccessor _usernameAccessor;
+        public Handler(DataContext context, IMapper mapper, IUserNameAccessor usernameAccessor)
+        {
+            _usernameAccessor = usernameAccessor;
+            _mapper = mapper;
+            _context = context;
+        }
+
+        public async Task<ResultValidators<List<Profiles.Profile>>> Handle(Query request, CancellationToken cancellationToken)
+        {
+            var profiles = new List<Profiles.Profile>();
+
+            switch (request.Predicate)
+            {
+                case "following":
+                    profiles = await _context.UserFollows.Where(x => x.Observer.UserName == request.UserName)
+                        .Select(u => u.Target)
+                        .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider,
+                            new { currentUsername = _usernameAccessor.GetUserName() })
+                        .ToListAsync();
+                    break;
+                case "followers":
+                    profiles = await _context.UserFollows.Where(x => x.Target.UserName == request.UserName)
+                        .Select(u => u.Observer)
+                        .ProjectTo<Profiles.Profile>(_mapper.ConfigurationProvider,
+                            new { currentUsername = _usernameAccessor.GetUserName() })
+                        .ToListAsync();
+                    break;
+            }
+
+            return ResultValidators<List<Profiles.Profile>>.Valid(profiles);
+        }
+    }
+}

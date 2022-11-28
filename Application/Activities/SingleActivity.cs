@@ -1,4 +1,5 @@
 using Application.Core;
+using Application.Interface;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
@@ -9,7 +10,7 @@ namespace Application.Activities
 {
     public class SingleActivity
     {
-        public class Query : IRequest<ResultValidators<ActivityDTO>> 
+        public class Query : IRequest<ResultValidators<ActivityDTO>>
         {
             public Guid Id { get; set; }
         }
@@ -18,9 +19,11 @@ namespace Application.Activities
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
+            private readonly IUserNameAccessor _userNameAccessor;
 
-            public Handler(DataContext context, IMapper mapper)
+            public Handler(DataContext context, IMapper mapper, IUserNameAccessor userNameAccessor)
             {
+                _userNameAccessor = userNameAccessor;
                 _context = context;
                 _mapper = mapper;
             }
@@ -28,7 +31,8 @@ namespace Application.Activities
             public async Task<ResultValidators<ActivityDTO>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var activity = await _context.Activities
-                    .ProjectTo<ActivityDTO>(_mapper.ConfigurationProvider)
+                    .ProjectTo<ActivityDTO>(_mapper.ConfigurationProvider,
+                        new { currentUsername = _userNameAccessor.GetUserName() })
                     .FirstOrDefaultAsync(x => x.Id == request.Id);
 
                 return ResultValidators<ActivityDTO>.Valid(activity);

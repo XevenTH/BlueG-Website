@@ -1,6 +1,5 @@
 using Application.Profiles;
 using Application.Profiles.DTO;
-using Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;

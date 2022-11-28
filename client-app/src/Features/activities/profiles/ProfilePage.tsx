@@ -10,11 +10,14 @@ import ProfileHeader from "./ProfileHeader";
 export default observer(function ProfilePage() {
     const { username } = useParams<{ username: string }>()
     const { ProfileStore } = UseStore();
-    const { profile, loadProfile, SetProfile } = ProfileStore;
+    const { profile, loadProfile, SetProfile, SetActiveTab } = ProfileStore;
 
     useEffect(() => {
         SetProfile(username);
-    }, [SetProfile, username])
+        return () => {
+            SetActiveTab(0);
+        }
+    }, [SetProfile, username, SetActiveTab])
 
     if (loadProfile) return <LoadingScreen content='PLEASE WAIT....' />
 
