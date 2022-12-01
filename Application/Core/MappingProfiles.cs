@@ -21,6 +21,14 @@ namespace Application.Core
                 .ForMember(ad => ad.HostUserName,
                             o => o.MapFrom(a => a.Attendees.FirstOrDefault(x => x.IsHost).Users.UserName));
 
+            CreateMap<UserActivities, ProfileActivityDTO>()
+                .ForMember(pa => pa.Id, o => o.MapFrom(ua => ua.Activities.Id))
+                .ForMember(pa => pa.Title, o => o.MapFrom(ua => ua.Activities.Title))
+                .ForMember(pa => pa.Date, o => o.MapFrom(ua => ua.Activities.Date))
+                .ForMember(pa => pa.Category, o => o.MapFrom(ua => ua.Activities.Category))
+                .ForMember(ad => ad.HostUserName,
+                            o => o.MapFrom(a => a.Activities.Attendees.FirstOrDefault(x => x.IsHost).Users.UserName));
+
             CreateMap<UserActivities, AttendeeDTO>()
                 .ForMember(p => p.DisplayName, o => o.MapFrom(a => a.Users.DisplayName))
                 .ForMember(p => p.UserName, o => o.MapFrom(a => a.Users.UserName))
@@ -29,7 +37,7 @@ namespace Application.Core
                 .ForMember(p => p.FollowersCount, o => o.MapFrom(ua => ua.Users.Followers.Count))
                 .ForMember(p => p.FollowingCount, o => o.MapFrom(ua => ua.Users.Followings.Count))
                 .ForMember(p => p.Following, o => o.MapFrom(s =>
-                    s.Users.Followers.Any(x => x.Observer.UserName == currentUsername)));;
+                    s.Users.Followers.Any(x => x.Observer.UserName == currentUsername)));
 
             CreateMap<UserApp, Profiles.Profile>()
                 .ForMember(p => p.Image, o => o.MapFrom(ua => ua.Photos.FirstOrDefault(x => x.IsMain).Url))

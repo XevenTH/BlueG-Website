@@ -14,6 +14,14 @@ public class ProfilesController : BaseAPIController
         return ResultValidatorsHandler(result);
     }
 
+    [HttpGet("{username}/activities")]
+    public async Task<IActionResult> ProfileActivities(string username, [FromQuery] string predicate)
+    {
+        var result = await Mediator.Send(new ProfileActivity.Query { UserName = username, Predicate = predicate });
+
+        return ResultValidatorsHandler(result);
+    }
+
     [HttpPut]
     public async Task<IActionResult> UpdateBio(AboutDTO aboutValue)
     {
@@ -21,5 +29,4 @@ public class ProfilesController : BaseAPIController
 
         return ResultValidatorsHandler(result);
     }
-
 }

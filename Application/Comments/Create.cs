@@ -18,14 +18,6 @@ public class Create
         public Guid ActivityId { get; set; }
     }
 
-    public class CommandValidator : AbstractValidator<Command>
-    {
-        public CommandValidator()
-        {
-            RuleFor(x => x.Body).NotEmpty();
-        }
-    }
-
     public class Handler : IRequestHandler<Command, ResultValidators<CommentDTO>>
     {
         private readonly DataContext _context;

@@ -5,7 +5,7 @@ import ProfileCard from "./ProfileCard";
 
 export default observer(function FollowingFollowers() {
     const { ProfileStore } = UseStore();
-    const { profile, loadFollowers, followingUsers, activeTab } = ProfileStore
+    const { profile, loading: loadFollowers, followingUsers, activeTab } = ProfileStore
 
     return (
         <Tab.Pane loading={loadFollowers}>

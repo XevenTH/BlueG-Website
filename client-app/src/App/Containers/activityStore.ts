@@ -1,8 +1,9 @@
 import { format } from "date-fns";
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, reaction, runInAction } from "mobx";
 import { v4 as uuid } from "uuid";
 import agent from "../API/APIAgent";
 import { Activity, ActivityFormValues } from "../Models/Activity";
+import { Pagination, PagingParams } from "../Models/pagination";
 import { Profile } from "../Models/profile";
 import { container } from "./storeContainer";
 
@@ -12,13 +13,24 @@ export default class ActivityStore {
     initialLoading = true;
     formMode: boolean = false;
     isSubmitting: boolean = false;
+    pagination: Pagination | null = null;
+    pagingParams = new PagingParams();
+    predicate = new Map().set('all', true);
 
     constructor() {
-        makeAutoObservable(this)
+        makeAutoObservable(this);
+
+        reaction(
+            () => this.predicate.keys(),
+            () => {
+                this.pagingParams = new PagingParams();
+                this.activitiesMap.clear();
+                this.GetAllActivities();
+            })
     }
 
     get sortingActivitiesByDate() {
-        return Array.from(this.activitiesMap.values()).sort((a, b) => b.date!.getTime() - a.date!.getTime())
+        return Array.from(this.activitiesMap.values()).sort((a, b) => a.date!.getTime() - b.date!.getTime())
     }
 
     get groupAllActivities() {
@@ -33,20 +45,71 @@ export default class ActivityStore {
         )
     }
 
+    get AxiosParams() {
+        const params = new URLSearchParams();
+        params.append('pageNumber', this.pagingParams.pageNumber.toString());
+        params.append('pageSize', this.pagingParams.pageSize.toString());
+        this.predicate.forEach((value, key) => {
+            if (key === 'startDate') {
+                params.append(key, (value as Date).toISOString());
+            }
+            else {
+                params.append(key, value);
+            }
+        })
+        return params;
+    }
+
+    SetPagingParams = (pagingParams: PagingParams) => {
+        this.pagingParams = pagingParams;
+    }
+
+    SetPredicate = (predicate: string, value: string | Date) => {
+        const reset = () => {
+            this.predicate.forEach((value, key) => {
+                if (key !== 'startDate') this.predicate.delete(key);
+            })
+        }
+        switch (predicate) {
+            case 'all':
+                reset();
+                this.predicate.set('all', true);
+                break;
+            case 'isGoing':
+                reset();
+                this.predicate.set('isGoing', true);
+                break;
+            case 'isHost':
+                reset();
+                this.predicate.set('isHost', true);
+                break;
+            case 'startDate':
+                this.predicate.delete('startDate');
+                this.predicate.set('startDate', value);
+                break;
+        }
+    }
+
     GetAllActivities = async () => {
+        this.SetInitialLoading(true);
         try {
-            const datas = await agent.handler.List();
+            const result = await agent.handler.List(this.AxiosParams);
             runInAction(() => {
-                datas.forEach(data => {
+                result.datas.forEach(data => {
                     this.SetActivityMap(data);
-                    this.SetInitialLoading(false);
                 })
+                this.SetPagintaion(result.pagination);
+                this.SetInitialLoading(false);
             })
         }
         catch (err) {
             console.log(err);
             this.SetInitialLoading(false);
         }
+    }
+
+    SetPagintaion = (pagintaion: Pagination) => {
+        this.pagination = pagintaion;
     }
 
     GetActivityById = async (id: string) => {

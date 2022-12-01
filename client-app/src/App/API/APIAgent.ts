@@ -3,6 +3,8 @@ import { toast } from "react-toastify";
 import { history } from "../..";
 import { container } from "../Containers/storeContainer";
 import { Activity, ActivityFormValues } from "../Models/Activity";
+import { Events } from "../Models/Events";
+import { PaginatedResult } from "../Models/pagination";
 import { AboutInitialModel, Photo, Profile } from "../Models/profile";
 import { User, UserFormValues } from "../Models/User";
 
@@ -23,6 +25,11 @@ axios.interceptors.request.use(config => {
 
 axios.interceptors.response.use(async res => {
     await loading(1000);
+    const pagination = res.headers['pagination'];
+    if (pagination) {
+        res.data = new PaginatedResult(res.data, JSON.parse(pagination));
+        return res;
+    }
     return res;
 }, (error: AxiosError) => {
     const { data, status, config } = error.response!;
@@ -72,7 +79,7 @@ const request = {
 };
 
 const activityHandler = {
-    List: () => request.get<Activity[]>('/activities'),
+    List: (params: URLSearchParams) => axios.get<PaginatedResult<Activity[]>>('/activities', { params }).then(responsePayload),
     details: (id: String) => request.get<Activity>(`/activities/${id}`),
     post: (activity: ActivityFormValues) => request.post<void>(`/activities/`, activity),
     update: (activity: ActivityFormValues) => request.put<void>(`/activities/${activity.id}`, activity),
@@ -93,14 +100,16 @@ const Profiles = {
         let formData = new FormData();
         formData.append('File', File);
         return axios.post<Photo>('photos', formData, {
-            headers: {'Content-Type' : 'multipart/form-data'}
+            headers: { 'Content-Type': 'multipart/form-data' }
         })
     },
     setMainPhoto: (id: string) => request.post(`/photos/${id}/setmain`, {}),
     deletePhoto: (id: string) => request.delete(`/photos/${id}`),
     updateFollow: (username: string) => request.post(`/follow/${username}`, {}),
-    listFollow: (username: string, predicate: string) => 
-        request.get<Profile[]>(`/follow/${username}?predicate=${predicate}`)
+    listFollow: (username: string, predicate: string) =>
+        request.get<Profile[]>(`/follow/${username}?predicate=${predicate}`),
+    allEvents: (username: string, predicate: string) => 
+        request.get<Events[]>(`/profiles/${username}/activities?predicate=${predicate}`)
 }
 
 const agent = {
