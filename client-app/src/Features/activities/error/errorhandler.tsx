@@ -4,7 +4,7 @@ import { Button, Header, Segment } from "semantic-ui-react";
 import ErrorView from './errorview';
 
 export default function TestErrors() {
-    const baseUrl = 'http://localhost:5000/api/'
+    const baseUrl = process.env.REACT_APP_API_URL;
 
     const [error, setError] = useState(null);
 

@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button, Segment } from "semantic-ui-react";
 import * as Yup from 'yup';
 import ReuseableDate from '../../../App/common/Form/ReuseableDate';
@@ -14,7 +14,7 @@ import LoadingScreen from "../../../App/Layout/loadingCompo";
 import { ActivityFormValues } from "../../../App/Models/Activity";
 
 export default observer(function ActivityForm() {
-    const history = useHistory();
+    const navigate = useNavigate();
     const { activityStore } = UseStore();
     const { UpdateActivity, CreateActivity, GetActivityById, initialLoading } = activityStore
     const { id } = useParams<{ id: string }>();
@@ -37,12 +37,12 @@ export default observer(function ActivityForm() {
     function LocalUpdateActivity(activity: ActivityFormValues) {
         if (!activity.id) {
             CreateActivity(activity).then(data => {
-                history.push(`/games/${data!.id}`);
+                navigate(`/games/${data!.id}`);
             })
         }
         else {
             UpdateActivity(activity).then(() => {
-                history.push(`/games/${activity.id}`);
+                navigate(`/games/${activity.id}`);
             })
         }
     }

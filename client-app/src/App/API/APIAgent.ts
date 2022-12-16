@@ -1,14 +1,14 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
-import { history } from "../..";
 import { container } from "../Containers/storeContainer";
 import { Activity, ActivityFormValues } from "../Models/Activity";
 import { Events } from "../Models/Events";
 import { PaginatedResult } from "../Models/pagination";
 import { AboutInitialModel, Photo, Profile } from "../Models/profile";
 import { User, UserFormValues } from "../Models/User";
+import { router } from "../router/Routes";
 
-axios.defaults.baseURL = "http://localhost:5000/api";
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 const loading = (delay: number) => {
     return new Promise((resolve) => {
@@ -24,7 +24,8 @@ axios.interceptors.request.use(config => {
 })
 
 axios.interceptors.response.use(async res => {
-    await loading(1000);
+    if(process.env.NODE_ENV === 'development') await loading(1000);
+    
     const pagination = res.headers['pagination'];
     if (pagination) {
         res.data = new PaginatedResult(res.data, JSON.parse(pagination));
@@ -42,7 +43,7 @@ axios.interceptors.response.use(async res => {
         case 400:
             if (typeof datas === 'string') toast.error(datas);
 
-            if (config.method === 'get' && datas.errors.hasOwnProperty('id')) history.push('/not-found');
+            if (config.method === 'get' && datas.errors.hasOwnProperty('id')) router.navigate('/not-found');
 
             if (datas.errors) {
                 const stateArray = [];
@@ -56,13 +57,19 @@ axios.interceptors.response.use(async res => {
             break;
         case 401:
             toast.error('Unautorized');
+            router.navigate('/')
+            break;
+        case 403:
+            toast.error('Forbiden');
+            router.navigate('/not-found')
             break;
         case 404:
-            history.push('/not-found');
+            router.navigate('/not-found')
+            toast.error('Not Found');
             break;
         case 500:
             container.commonStore.SetserverError(datas);
-            history.push('/server-error')
+            router.navigate('/server-error')
             break;
     }
 
@@ -108,7 +115,7 @@ const Profiles = {
     updateFollow: (username: string) => request.post(`/follow/${username}`, {}),
     listFollow: (username: string, predicate: string) =>
         request.get<Profile[]>(`/follow/${username}?predicate=${predicate}`),
-    allEvents: (username: string, predicate: string) => 
+    allEvents: (username: string, predicate: string) =>
         request.get<Events[]>(`/profiles/${username}/activities?predicate=${predicate}`)
 }
 

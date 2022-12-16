@@ -1,8 +1,7 @@
 import { format } from "date-fns";
 import { observer } from "mobx-react-lite";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Icon, Item, ItemDescription, ItemGroup, Label, Segment, SegmentGroup } from "semantic-ui-react";
-import { history } from "../../..";
 import { UseStore } from "../../../App/Containers/storeContainer";
 import { Activity } from "../../../App/Models/Activity";
 import SingleActivityListItem from "./SingleActivityListItem";
@@ -12,6 +11,7 @@ interface Props {
 }
 
 export default observer(function SingleActivityList({ singleActivity }: Props) {
+    const navigate = useNavigate();
     const { activityStore } = UseStore();
     const { isSubmitting } = activityStore
 
@@ -61,7 +61,7 @@ export default observer(function SingleActivityList({ singleActivity }: Props) {
                 </span>
                 <Button
                     loading={isSubmitting}
-                    onClick={() => history.push(`/games/${singleActivity.id}`)}
+                    onClick={() => navigate(`/games/${singleActivity.id}`)}
                     floated='right' content='View' color='teal'
                 />
             </Segment>

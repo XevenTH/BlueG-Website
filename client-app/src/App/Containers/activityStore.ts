@@ -10,7 +10,7 @@ import { container } from "./storeContainer";
 export default class ActivityStore {
     activitiesMap = new Map<string, Activity>();
     selectedActivity: Activity | undefined = undefined;
-    initialLoading = true;
+    initialLoading = false;
     formMode: boolean = false;
     isSubmitting: boolean = false;
     pagination: Pagination | null = null;
@@ -113,7 +113,7 @@ export default class ActivityStore {
     }
 
     GetActivityById = async (id: string) => {
-        this.SetInitialLoading(false);
+        this.SetInitialLoading(true);
         let activity = this.activitiesMap.get(id);
         if (activity) {
             this.selectedActivity = activity;

@@ -27,7 +27,7 @@ export default observer(function ActivityDetails() {
             <GridColumn width={10}>
                 <HeaderCompo activity={activities} />
                 <Info activity={activities} />
-                <Chat activityId={activities.id} />
+                <Chat activityId={activities.id} activity={activities} />
             </GridColumn>
             <GridColumn width={6}>
                 <Side activity={activities} />

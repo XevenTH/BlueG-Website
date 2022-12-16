@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
@@ -27,6 +26,7 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult<UserDTO>> login(LoginDTO data)
         {
             var user = await _userManager.Users
@@ -39,13 +39,20 @@ namespace API.Controllers
 
             if (checker.Succeeded)
             {
-                return CreateUserDTO(user);
+                return new UserDTO
+                {
+                    DisplayName = user.DisplayName,
+                    UserName = user.UserName,
+                    Token = _token.CreateToken(user),
+                    Image = user?.Photos?.FirstOrDefault(x => x.IsMain)?.Url,
+                };
             }
 
             return Unauthorized();
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
         {
             if (await _userManager.Users.AnyAsync(data => data.Email == registerDTO.Email))
@@ -70,7 +77,13 @@ namespace API.Controllers
 
             if (result.Succeeded)
             {
-                return CreateUserDTO(newUser);
+                return new UserDTO
+                {
+                    DisplayName = newUser.DisplayName,
+                    UserName = newUser.UserName,
+                    Token = _token.CreateToken(newUser),
+                    Image = newUser?.Photos?.FirstOrDefault(x => x.IsMain)?.Url,
+                };
             }
 
             return BadRequest("Oopss There Is A Problem");
@@ -84,11 +97,6 @@ namespace API.Controllers
                 .Include(p => p.Photos)
                 .FirstOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
 
-            return CreateUserDTO(user);
-        }
-
-        private UserDTO CreateUserDTO(UserApp user)
-        {
             return new UserDTO
             {
                 DisplayName = user.DisplayName,
@@ -97,5 +105,16 @@ namespace API.Controllers
                 Image = user?.Photos?.FirstOrDefault(x => x.IsMain)?.Url,
             };
         }
+
+        // private UserDTO CreateUserDTO(UserApp user)
+        // {
+        //     return new UserDTO
+        //     {
+        //         DisplayName = user.DisplayName,
+        //         UserName = user.UserName,
+        //         Token = _token.CreateToken(user),
+        //         Image = user?.Photos?.FirstOrDefault(x => x.IsMain)?.Url,
+        //     };
+        // }
     }
 }

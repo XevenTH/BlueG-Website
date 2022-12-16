@@ -30,6 +30,20 @@ namespace API
         {
             app.UseMiddleware<ExceptionMiddleware>();
 
+            app.UseXContentTypeOptions();
+            app.UseReferrerPolicy(opt => opt.NoReferrer());
+            app.UseXXssProtection(opt => opt.EnabledWithBlockMode());
+            app.UseXfo(opt => opt.Deny());
+            app.UseCspReportOnly(opt => opt
+                .BlockAllMixedContent()
+                .StyleSources(s => s.Self().CustomSources("https://fonts.googleapis.com" ,"https://cdn.jsdelivr.net"))
+                .FontSources(s => s.Self().CustomSources("https://fonts.gstatic.com", "data:", "https://cdn.jsdelivr.net"))
+                .FormActions(s => s.Self())
+                .FrameAncestors(s => s.Self())
+                .ImageSources(s => s.Self().CustomSources("blob:", "https://res.cloudinary.com"))
+                .ScriptSources(s => s.Self().CustomSources("http://localhost:5000"))
+            );
+
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
@@ -43,13 +57,16 @@ namespace API
             app.UseCors("CorsPolicy");
 
             app.UseAuthentication();
-
             app.UseAuthorization();
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<ChatHub>("/chat");
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }

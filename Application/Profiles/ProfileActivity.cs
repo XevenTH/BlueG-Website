@@ -39,10 +39,10 @@ public class ProfileActivity
                 switch (request.Predicate)
                 {
                     case "past":
-                        query = query.Where(a => a.Date <= DateTime.Now);
+                        query = query.Where(a => a.Date <= DateTime.UtcNow);
                         break;
                     case "future":
-                        query = query.Where(a => a.Date >= DateTime.Now);
+                        query = query.Where(a => a.Date >= DateTime.UtcNow);
                         break;
                     case "hosting":
                         query = query.Where(a => a.HostUserName == request.UserName);

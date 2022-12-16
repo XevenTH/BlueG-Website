@@ -1,5 +1,4 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { history } from "../..";
 import agent from "../API/APIAgent";
 import { User, UserFormValues } from "../Models/User";
 import { container } from "./storeContainer";
@@ -22,7 +21,6 @@ export default class UserStore {
 
             runInAction(() => this.user = data);
             container.modalsStore.closeForm();
-            history.push('/games');
         } catch (err) {
             throw err;
         }
@@ -35,7 +33,6 @@ export default class UserStore {
 
             runInAction(() => this.user = data);
             container.modalsStore.closeForm();
-            history.push('/games');
         } catch (err) {
             throw err;
         }
@@ -50,10 +47,9 @@ export default class UserStore {
         }
     }
 
-    logout = () => {
+    logout = async () => {
         container.commonStore.setToken(null);
-        this.user = null;
-        history.push('/');
+        runInAction(() => this.user = null); 
     }
 
     SetPhotoProfile = (image: string) => {

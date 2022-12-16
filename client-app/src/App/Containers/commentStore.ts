@@ -14,7 +14,7 @@ export default class CommentStore {
     MakeConnection = (activityId: string) => {
         if (activityId) {
             this.signalrHub = new HubConnectionBuilder()
-                .withUrl('http://localhost:5000/chat?activityId=' + activityId, {
+                .withUrl(process.env.REACT_APP_CHAT_URL + '?activityId=' + activityId, {
                     accessTokenFactory: () => container.userStore.user?.token!
                 })
                 .withAutomaticReconnect()
@@ -26,7 +26,7 @@ export default class CommentStore {
             this.signalrHub.on('LoadComments', ((comment: Comment[]) => {
                 runInAction(() => {
                     comment.forEach(x => {
-                        x.createdAt = new Date(x.createdAt + 'Z');
+                        x.createdAt = new Date(x.createdAt);
                     });
                     this.comments = comment
                 });

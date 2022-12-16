@@ -1,15 +1,16 @@
 import { observer } from 'mobx-react-lite';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Button, Container, Dropdown, DropdownItem, DropdownMenu, Image, Menu } from "semantic-ui-react";
 import { UseStore } from '../Containers/storeContainer';
 
 export default observer(function NavBar() {
     const { userStore: { user, logout } } = UseStore();
+    const navigate = useNavigate();
 
     return (
         <Menu inverted fixed='top'>
             <Container>
-                <Menu.Item as={NavLink} to={'/'} exact header>
+                <Menu.Item as={NavLink} to={'/'} header>
                     <img src="/assets/logo.png" alt="logo" style={{ marginRight: '10px' }} />
                     BlueG
                 </Menu.Item>
@@ -24,7 +25,8 @@ export default observer(function NavBar() {
                         <DropdownMenu>
                             <DropdownItem as={Link} to={`/profile/${user?.userName}`} 
                                 text='Profile' icon='user' />
-                            <DropdownItem onClick={logout} text='Logout' icon='power' />
+                            <DropdownItem onClick={() => logout().then(() => navigate('/'))} 
+                                text='Logout' icon='power' />
                         </DropdownMenu>
                     </Dropdown>
                 </Menu.Item>

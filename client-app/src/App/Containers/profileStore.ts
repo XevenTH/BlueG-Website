@@ -42,10 +42,10 @@ export default class ProfileStore {
         return false;
     }
 
-    SetProfile = async (username: string) => {
+    SetProfile = async (username: string | undefined) => {
         this.loadProfile = true;
         try {
-            var profile = await agent.Profiles.profile(username);
+            var profile = await agent.Profiles.profile(username!);
             runInAction(() => {
                 this.profile = profile;
                 this.loadProfile = false;
@@ -123,8 +123,8 @@ export default class ProfileStore {
                 if (this.profile) {
                     this.profile.photos = this.profile.photos?.filter(x => x.id !== photo.id);
                 }
+                this.uploading = false
             })
-            this.uploading = false
         }
         catch (error) {
             console.log(error);
@@ -173,7 +173,7 @@ export default class ProfileStore {
         }
     }
 
-    GetAllEvents = async (predicate: string, username: string) => {
+    GetAllEvents = async (predicate: string, username: any) => {
         this.loading = true;
         try {
             var events = await agent.Profiles.allEvents(username, predicate);

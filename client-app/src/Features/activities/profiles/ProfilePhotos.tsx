@@ -69,6 +69,7 @@ export default observer(function ProfilePhotos({ profile }: Props) {
                                                     color='red' 
                                                     icon='trash'
                                                     loading={target === p.id && uploading}
+                                                    disabled={p.isMain}
                                                     onClick={e => SetDeletehandler(p, e)}
                                                     />
                                                 </Button.Group>

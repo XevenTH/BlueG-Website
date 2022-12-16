@@ -1,15 +1,18 @@
 import { ErrorMessage, Form, Formik } from "formik";
 import { observer } from "mobx-react-lite";
+import { useNavigate } from "react-router-dom";
 import { Button, Header, Label } from "semantic-ui-react";
 import ReuseableTextInput from "../../../App/common/Form/ReuseableTextInput";
 import { UseStore } from "../../../App/Containers/storeContainer";
 
 export default observer(function LoginForm() {
-    const { userStore } = UseStore()
+    const { userStore } = UseStore();
+    const navigate = useNavigate();
 
     return (
         <Formik initialValues={{ email: '', password: '', error: null }}
-            onSubmit={((value, { setErrors }) => userStore.login(value).catch(() =>
+            onSubmit={((value, { setErrors }) => userStore.login(value).then(() => navigate('/games'))
+                .catch(() =>
                 setErrors({ error: 'Invalid Email or Password' })))}
         > 
             {({ handleSubmit, isSubmitting, errors }) => (

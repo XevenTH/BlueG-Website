@@ -1,5 +1,6 @@
 import { ErrorMessage, Form, Formik } from "formik";
 import { observer } from "mobx-react-lite";
+import { useNavigate } from "react-router-dom";
 import { Button, Header } from "semantic-ui-react";
 import * as Yup from 'yup';
 import ReuseableTextInput from "../../../App/common/Form/ReuseableTextInput";
@@ -8,6 +9,7 @@ import ErrorView from "../error/errorview";
 
 export default observer(function RegisterForm() {
     const { userStore } = UseStore();
+    const navigate = useNavigate();
 
     const validations = Yup.object({
         displayName: Yup.string().required(),
@@ -18,7 +20,8 @@ export default observer(function RegisterForm() {
 
     return (
         <Formik initialValues={{ displayName: '', userName: '', email: '', password: '', error: null }}
-            onSubmit={((value, { setErrors }) => userStore.register(value).catch(error =>
+            onSubmit={((value, { setErrors }) => userStore.register(value).then(() => navigate('/games'))
+                .catch(error =>
                 setErrors({ error })))}
             validationSchema={validations}
         >
