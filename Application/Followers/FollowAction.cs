@@ -29,6 +29,7 @@ public class FollowAction
             var observer = await _context.Users.FirstOrDefaultAsync(x => x.UserName == _userNameAccessor.GetUserName());
 
             var target = await _context.Users.FirstOrDefaultAsync(x => x.UserName == request.TargetUsername);
+
             if (target == null) return null;
 
             var follow = await _context.UserFollows.FindAsync(observer.Id, target.Id);

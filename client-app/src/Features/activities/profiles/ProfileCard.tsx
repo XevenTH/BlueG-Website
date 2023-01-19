@@ -19,7 +19,7 @@ export default function ProfileCard({ profile }: Props) {
         <Card>
             <Image src={profile.image || '/assets/user.png'} />
             <CardContent>
-                <CardHeader as={Link} to={`profile/${profile.userName}`} content={profile.displayName} />
+                <CardHeader as={Link} to={`/profile/${profile.userName}`} content={profile.displayName} />
                 <CardDescription content={truncate(profile.bio)} style={{ fontSize: '1.25em' }} />
             </CardContent>
             <CardContent extra>
